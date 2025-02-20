@@ -5,20 +5,20 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema BD
+-- Schema myproject
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `BD` ;
+DROP SCHEMA IF EXISTS `myproject` ;
 
 -- -----------------------------------------------------
--- Schema BD
+-- Schema myproject
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `BD` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin ;
-USE `BD` ;
+CREATE SCHEMA IF NOT EXISTS `myproject` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin ;
+USE `myproject` ;
 
 -- -----------------------------------------------------
--- Table `BD`.`Patients`
+-- Table `myproject`.`Patients`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `BD`.`Patients` (
+CREATE TABLE IF NOT EXISTS `myproject`.`Patients` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(100) NOT NULL,
   `prenom` VARCHAR(100) NOT NULL,
@@ -30,15 +30,15 @@ CREATE TABLE IF NOT EXISTS `BD`.`Patients` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
-CREATE UNIQUE INDEX `telephone_UNIQUE` ON `BD`.`Patients` (`telephone` ASC) VISIBLE;
+CREATE UNIQUE INDEX `telephone_UNIQUE` ON `myproject`.`Patients` (`telephone` ASC) VISIBLE;
 
-CREATE UNIQUE INDEX `email_UNIQUE` ON `BD`.`Patients` (`email` ASC) VISIBLE;
+CREATE UNIQUE INDEX `email_UNIQUE` ON `myproject`.`Patients` (`email` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
--- Table `BD`.`Médecins`
+-- Table `myproject`.`Médecins`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `BD`.`Médecins` (
+CREATE TABLE IF NOT EXISTS `myproject`.`Médecins` (
   `id` INT NOT NULL,
   `nom` VARCHAR(100) NOT NULL,
   `prenom` VARCHAR(100) NOT NULL,
@@ -48,15 +48,15 @@ CREATE TABLE IF NOT EXISTS `BD`.`Médecins` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
-CREATE UNIQUE INDEX `telephone_UNIQUE` ON `BD`.`Médecins` (`telephone` ASC) VISIBLE;
+CREATE UNIQUE INDEX `telephone_UNIQUE` ON `myproject`.`Médecins` (`telephone` ASC) VISIBLE;
 
-CREATE UNIQUE INDEX `email_UNIQUE` ON `BD`.`Médecins` (`email` ASC) VISIBLE;
+CREATE UNIQUE INDEX `email_UNIQUE` ON `myproject`.`Médecins` (`email` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
--- Table `BD`.`Rendez_vous`
+-- Table `myproject`.`Rendez_vous`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `BD`.`Rendez_vous` (
+CREATE TABLE IF NOT EXISTS `myproject`.`Rendez_vous` (
   `id` INT NOT NULL,
   `objet` VARCHAR(200) NOT NULL DEFAULT 'Consultation',
   `date_rdv` VARCHAR(45) NULL,
@@ -67,25 +67,25 @@ CREATE TABLE IF NOT EXISTS `BD`.`Rendez_vous` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Rendez-vous_Médecins`
     FOREIGN KEY (`Médecins_id`)
-    REFERENCES `BD`.`Médecins` (`id`)
+    REFERENCES `myproject`.`Médecins` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Rendez_vous_Patients1`
     FOREIGN KEY (`Patients_id`)
-    REFERENCES `BD`.`Patients` (`id`)
+    REFERENCES `myproject`.`Patients` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Rendez-vous_Médecins_idx` ON `BD`.`Rendez_vous` (`Médecins_id` ASC) VISIBLE;
+CREATE INDEX `fk_Rendez-vous_Médecins_idx` ON `myproject`.`Rendez_vous` (`Médecins_id` ASC) VISIBLE;
 
-CREATE INDEX `fk_Rendez_vous_Patients1_idx` ON `BD`.`Rendez_vous` (`Patients_id` ASC) VISIBLE;
+CREATE INDEX `fk_Rendez_vous_Patients1_idx` ON `myproject`.`Rendez_vous` (`Patients_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
--- Table `BD`.`tarifs`
+-- Table `myproject`.`tarifs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `BD`.`tarifs` (
+CREATE TABLE IF NOT EXISTS `myproject`.`tarifs` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `frais` VARCHAR(45) NOT NULL,
   `tarif` FLOAT(6,2) NOT NULL,
@@ -93,18 +93,18 @@ CREATE TABLE IF NOT EXISTS `BD`.`tarifs` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_tarifs_Médecins1`
     FOREIGN KEY (`Médecins_id`)
-    REFERENCES `BD`.`Médecins` (`id`)
+    REFERENCES `myproject`.`Médecins` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_tarifs_Médecins1_idx` ON `BD`.`tarifs` (`Médecins_id` ASC) VISIBLE;
+CREATE INDEX `fk_tarifs_Médecins1_idx` ON `myproject`.`tarifs` (`Médecins_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
--- Table `BD`.`Frais`
+-- Table `myproject`.`Frais`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `BD`.`Frais` (
+CREATE TABLE IF NOT EXISTS `myproject`.`Frais` (
   `id` INT NOT NULL,
   `type-frais` VARCHAR(100) NULL,
   `statut` VARCHAR(100) NULL,
@@ -113,19 +113,19 @@ CREATE TABLE IF NOT EXISTS `BD`.`Frais` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Frais_tarifs1`
     FOREIGN KEY (`tarifs_id`)
-    REFERENCES `BD`.`tarifs` (`id`)
+    REFERENCES `myproject`.`tarifs` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Frais_Rendez_vous1`
     FOREIGN KEY (`Rendez_vous_id`)
-    REFERENCES `BD`.`Rendez_vous` (`id`)
+    REFERENCES `myproject`.`Rendez_vous` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Frais_tarifs1_idx` ON `BD`.`Frais` (`tarifs_id` ASC) VISIBLE;
+CREATE INDEX `fk_Frais_tarifs1_idx` ON `myproject`.`Frais` (`tarifs_id` ASC) VISIBLE;
 
-CREATE INDEX `fk_Frais_Rendez_vous1_idx` ON `BD`.`Frais` (`Rendez_vous_id` ASC) VISIBLE;
+CREATE INDEX `fk_Frais_Rendez_vous1_idx` ON `myproject`.`Frais` (`Rendez_vous_id` ASC) VISIBLE;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
