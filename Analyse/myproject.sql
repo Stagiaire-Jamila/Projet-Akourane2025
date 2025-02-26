@@ -19,7 +19,7 @@ USE `myproject` ;
 -- Table `myproject`.`Medecins`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`Medecins` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(100) NOT NULL,
   `prenom` VARCHAR(100) NOT NULL,
   `specialite` VARCHAR(100) NULL,
@@ -108,7 +108,7 @@ CREATE INDEX `fk_Patients_Rendez_vous1_idx` ON `myproject`.`Patients` (`Rendez_v
 -- Table `myproject`.`Frais`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`Frais` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `type-frais` VARCHAR(100) NULL,
   `statut` VARCHAR(100) NULL,
   `tarifs` FLOAT(6,2) NULL,
