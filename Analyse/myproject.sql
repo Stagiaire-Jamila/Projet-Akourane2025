@@ -51,14 +51,14 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `myproject`.`Rendez_vous` (
   `id` INT NOT NULL,
   `objet` VARCHAR(200) NOT NULL DEFAULT 'Consultation',
-  `date_rdv` VARCHAR(45) NULL,
-  `heur_rdv` DATETIME NULL,
-  `reciption` TIME NULL,
+  `date_rdv` VARCHAR(45) NOT NULL,
+  `heur_rdv` DATETIME NOT NULL,
+  `reciption` TIME NOT NULL,
   `date_paiements` DATETIME NOT NULL,
-  `pays` VARCHAR(3) NULL,
+  `pays` VARCHAR(3) NOT NULL,
   `Medecins_id` INT NOT NULL,
   `total_tarifs_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`, `total_tarifs_id`, `Medecins_id`),
   CONSTRAINT `fk_Rendez_vous_Medecins`
     FOREIGN KEY (`Medecins_id`)
     REFERENCES `myproject`.`Medecins` (`id`)
@@ -80,16 +80,16 @@ CREATE INDEX `fk_Rendez_vous_total_tarifs1_idx` ON `myproject`.`Rendez_vous` (`t
 -- Table `myproject`.`Patients`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`Patients` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL,
   `nom` VARCHAR(100) NOT NULL,
   `prenom` VARCHAR(100) NOT NULL,
-  `naissance` DATE NULL,
-  `adresse` VARCHAR(255) NULL,
+  `naissance` DATE NOT NULL,
+  `adresse` VARCHAR(255) NOT NULL,
   `telephone` VARCHAR(15) NULL,
   `email` VARCHAR(100) NULL,
-  `observation` TEXT NULL,
+  `observation` TEXT NOT NULL,
   `Rendez_vous_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`, `Rendez_vous_id`),
   CONSTRAINT `fk_Patients_Rendez_vous1`
     FOREIGN KEY (`Rendez_vous_id`)
     REFERENCES `myproject`.`Rendez_vous` (`id`)
@@ -109,11 +109,11 @@ CREATE INDEX `fk_Patients_Rendez_vous1_idx` ON `myproject`.`Patients` (`Rendez_v
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`Frais` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `type-frais` VARCHAR(100) NULL,
-  `statut` VARCHAR(100) NULL,
-  `tarifs` FLOAT(6,2) NULL,
+  `type-frais` VARCHAR(100) NOT NULL,
+  `statut` VARCHAR(100) NOT NULL,
+  `tarifs` FLOAT(6,2) NOT NULL,
   `total_tarifs_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`, `total_tarifs_id`),
   CONSTRAINT `fk_Frais_total_tarifs1`
     FOREIGN KEY (`total_tarifs_id`)
     REFERENCES `myproject`.`total_tarifs` (`id`)
