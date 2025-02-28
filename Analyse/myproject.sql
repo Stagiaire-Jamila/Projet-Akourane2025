@@ -49,8 +49,8 @@ ENGINE = InnoDB;
 -- Table `myproject`.`Rendez_vous`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`Rendez_vous` (
-  `id` INT NOT NULL,
-  `objet` VARCHAR(200) NOT NULL DEFAULT 'Consultation',
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `objet` VARCHAR(200) NOT NULL,
   `date_rdv` VARCHAR(45) NOT NULL,
   `heur_rdv` DATETIME NOT NULL,
   `reciption` TIME NOT NULL,
@@ -80,7 +80,7 @@ CREATE INDEX `fk_Rendez_vous_total_tarifs1_idx` ON `myproject`.`Rendez_vous` (`t
 -- Table `myproject`.`Patients`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`Patients` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(100) NOT NULL,
   `prenom` VARCHAR(100) NOT NULL,
   `naissance` DATE NOT NULL,
@@ -123,6 +123,110 @@ ENGINE = InnoDB;
 
 CREATE INDEX `fk_Frais_total_tarifs1_idx` ON `myproject`.`Frais` (`total_tarifs_id` ASC) VISIBLE;
 
+USE `myproject` ;
+
+-- -----------------------------------------------------
+-- procedure ajouter_medecin
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `ajouter_medecin`(
+    IN _nom VARCHAR(100),
+    IN _prenom VARCHAR(100),
+    IN _specialite VARCHAR(100),
+    IN _telephone VARCHAR(15),
+    IN _email VARCHAR(100)
+)
+BEGIN
+    INSERT INTO `myproject`.`Medecins` (`nom`, `prenom`, `specialite`, `telephone`, `email`)
+    VALUES (_nom, _prenom, _specialite, _telephone, _email);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure ajouter_total_tarif
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `ajouter_total_tarif`(
+    IN _frais VARCHAR(45),
+    IN _tarif FLOAT(6,2),
+    IN _montant_total DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO `myproject`.`total_tarifs` (`frais`, `tarif`, `montant total`)
+    VALUES (_frais, _tarif, _montant_total);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure ajouter_rendez_vous
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `ajouter_rendez_vous`(
+    IN _objet VARCHAR(200),
+    IN _date_rdv VARCHAR(45),
+    IN _heur_rdv DATETIME,
+    IN _reciption TIME,
+    IN _date_paiements DATETIME,
+    IN _pays VARCHAR(3),
+    IN _Medecins_id INT,
+    IN _total_tarifs_id INT
+)
+BEGIN
+    INSERT INTO `myproject`.`Rendez_vous` (`objet`, `date_rdv`, `heur_rdv`, `reciption`, `date_paiements`, `pays`, `Medecins_id`, `total_tarifs_id`)
+    VALUES (_objet, _date_rdv, _heur_rdv, _reciption, _date_paiements, _pays, _Medecins_id, _total_tarifs_id);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure ajouter_patient
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `ajouter_patient`(
+    IN _nom VARCHAR(100),
+    IN _prenom VARCHAR(100),
+    IN _naissance DATE,
+    IN _adresse VARCHAR(255),
+    IN _telephone VARCHAR(15),
+    IN _email VARCHAR(100),
+    IN _observation TEXT,
+    IN _Rendez_vous_id INT
+)
+BEGIN
+    INSERT INTO `myproject`.`Patients` (`nom`, `prenom`, `naissance`, `adresse`, `telephone`, `email`, `observation`, `Rendez_vous_id`)
+    VALUES (_nom, _prenom, _naissance, _adresse, _telephone, _email, _observation, _Rendez_vous_id);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure ajouter_frais
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `ajouter_frais`(
+    IN _type_frais VARCHAR(100),
+    IN _statut VARCHAR(100),
+    IN _tarifs FLOAT(6,2),
+    IN _total_tarifs_id INT
+)
+BEGIN
+    INSERT INTO `myproject`.`Frais` (`type-frais`, `statut`, `tarifs`, `total_tarifs_id`)
+    VALUES (_type_frais, _statut, _tarifs, _total_tarifs_id);
+END$$
+
+DELIMITER ;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
