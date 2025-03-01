@@ -38,7 +38,7 @@ CREATE UNIQUE INDEX `email_UNIQUE` ON `myproject`.`Medecins` (`email` ASC) VISIB
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `myproject`.`total_tarifs` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `frais` VARCHAR(45) NOT NULL,
+  `frais` VARCHAR(100) NOT NULL,
   `tarif` FLOAT(6,2) NOT NULL,
   `montant total` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`id`))
@@ -224,6 +224,257 @@ CREATE PROCEDURE `ajouter_frais`(
 BEGIN
     INSERT INTO `myproject`.`Frais` (`type-frais`, `statut`, `tarifs`, `total_tarifs_id`)
     VALUES (_type_frais, _statut, _tarifs, _total_tarifs_id);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure modifier_medecin
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `myproject`.`modifier_medecin`(
+    IN p_id INT,
+    IN p_nom VARCHAR(100),
+    IN p_prenom VARCHAR(100),
+    IN p_specialite VARCHAR(100),
+    IN p_telephone VARCHAR(15),
+    IN p_email VARCHAR(100)
+)
+BEGIN
+    -- Mise à jour du médecin dans la table Medecins
+    UPDATE `myproject`.`Medecins`
+    SET
+        `nom` = p_nom,
+        `prenom` = p_prenom,
+        `specialite` = p_specialite,
+        `telephone` = p_telephone,
+        `email` = p_email
+    WHERE `id` = p_id;
+    
+    -- Optionnellement, vous pouvez vérifier si la mise à jour a été effectuée avec succès
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Le médecin avec l\'ID spécifié n\'existe pas.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure modifier_total_tarifs
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `myproject`.`modifier_total_tarifs`(
+    IN p_id INT,
+    IN p_frais VARCHAR(45),
+    IN p_tarif FLOAT(6,2),
+    IN p_montant_total DECIMAL(10,2)
+)
+BEGIN
+    UPDATE `myproject`.`total_tarifs`
+    SET
+        `frais` = p_frais,
+        `tarif` = p_tarif,
+        `montant total` = p_montant_total
+    WHERE `id` = p_id;
+
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Le tarif avec l\'ID spécifié n\'existe pas.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure modifier_rendez_vous
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `myproject`.`modifier_rendez_vous`(
+    IN p_id INT,
+    IN p_objet VARCHAR(200),
+    IN p_date_rdv VARCHAR(45),
+    IN p_heur_rdv DATETIME,
+    IN p_reciption TIME,
+    IN p_date_paiements DATETIME,
+    IN p_pays VARCHAR(3),
+    IN p_Medecins_id INT,
+    IN p_total_tarifs_id INT
+)
+BEGIN
+    UPDATE `myproject`.`Rendez_vous`
+    SET
+        `objet` = p_objet,
+        `date_rdv` = p_date_rdv,
+        `heur_rdv` = p_heur_rdv,
+        `reciption` = p_reciption,
+        `date_paiements` = p_date_paiements,
+        `pays` = p_pays,
+        `Medecins_id` = p_Medecins_id,
+        `total_tarifs_id` = p_total_tarifs_id
+    WHERE `id` = p_id;
+
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Le rendez-vous avec l\'ID spécifié n\'existe pas.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure modifier_patients
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `myproject`.`modifier_patients`(
+    IN p_id INT,
+    IN p_nom VARCHAR(100),
+    IN p_prenom VARCHAR(100),
+    IN p_naissance DATE,
+    IN p_adresse VARCHAR(255),
+    IN p_telephone VARCHAR(15),
+    IN p_email VARCHAR(100),
+    IN p_observation TEXT,
+    IN p_Rendez_vous_id INT
+)
+BEGIN
+    UPDATE `myproject`.`Patients`
+    SET
+        `nom` = p_nom,
+        `prenom` = p_prenom,
+        `naissance` = p_naissance,
+        `adresse` = p_adresse,
+        `telephone` = p_telephone,
+        `email` = p_email,
+        `observation` = p_observation,
+        `Rendez_vous_id` = p_Rendez_vous_id
+    WHERE `id` = p_id;
+
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Le patient avec l\'ID spécifié n\'existe pas.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure modifier_frais
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE `myproject`.`modifier_frais`(
+    IN p_id INT,
+    IN p_type_frais VARCHAR(100),
+    IN p_statut VARCHAR(100),
+    IN p_tarifs FLOAT(6,2),
+    IN p_total_tarifs_id INT
+)
+BEGIN
+    UPDATE `myproject`.`Frais`
+    SET
+        `type-frais` = p_type_frais,
+        `statut` = p_statut,
+        `tarifs` = p_tarifs,
+        `total_tarifs_id` = p_total_tarifs_id
+    WHERE `id` = p_id;
+
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Le frais avec l\'ID spécifié n\'existe pas.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure supprimer_medecin
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE supprimer_medecin(IN doctor_id INT)
+BEGIN
+    -- First, delete the related records from 'Rendez_vous' table
+    DELETE FROM myproject.Rendez_vous WHERE Medecins_id = doctor_id;
+    
+    -- Then delete the doctor from the 'Medecins' table
+    DELETE FROM myproject.Medecins WHERE id = doctor_id;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure supprimer_total_tarifs
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE supprimer_total_tarifs(IN total_tarifs_id INT)
+BEGIN
+    -- First, delete associated records from 'Frais' table
+    DELETE FROM myproject.Frais WHERE total_tarifs_id = total_tarifs_id;
+    
+    -- Then delete the related records from 'Rendez_vous' table
+    DELETE FROM myproject.Rendez_vous WHERE total_tarifs_id = total_tarifs_id;
+
+    -- Finally, delete the total_tarifs record
+    DELETE FROM myproject.total_tarifs WHERE id = total_tarifs_id;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure supprimer_patient
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE supprimer_patient(IN patient_id INT)
+BEGIN
+    -- First, delete the related records from 'Rendez_vous' table
+    DELETE FROM myproject.Rendez_vous WHERE id = patient_id;
+    
+    -- Then delete the patient from the 'Patients' table
+    DELETE FROM myproject.Patients WHERE id = patient_id;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure supprimer_frais
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE supprimer_frais(IN frais_id INT)
+BEGIN
+    -- Delete the related fare record from the 'Frais' table
+    DELETE FROM myproject.Frais WHERE id = frais_id;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure supprimer_rendez_vous
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `myproject`$$
+CREATE PROCEDURE supprimer_rendez_vous(IN rendez_vous_id INT, IN medecins_id INT, IN total_tarifs_id INT)
+BEGIN
+    -- Delete the record from the 'Rendez_vous' table
+    DELETE FROM myproject.Rendez_vous 
+    WHERE id = rendez_vous_id AND Medecins_id = medecins_id AND total_tarifs_id = total_tarifs_id;
+    
+    -- You can also check if the deletion was successful (optional)
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Rendez-vous record not found or could not be deleted.';
+    END IF;
 END$$
 
 DELIMITER ;
